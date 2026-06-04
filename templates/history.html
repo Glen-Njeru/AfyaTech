@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Journal History — AfyaTech{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Your journal history</h1>
+  <a href="{{ url_for('journal') }}" class="btn btn-primary">+ New entry</a>
+</div>
+
+{% if entries.items %}
+  <div class="entries-list">
+    {% for entry in entries.items %}
+    <div class="entry-card entry-card-full">
+      <div class="entry-meta">
+        <span class="mood-badge mood-{{ entry.mood }}">{{ entry.mood }}/10</span>
+        <span class="entry-date">{{ entry.created_at.strftime('%B %d, %Y · %I:%M %p') }}</span>
+        <form method="POST" action="{{ url_for('delete_entry', entry_id=entry.id) }}" class="delete-form"
+              onsubmit="return confirm('Delete this entry? This cannot be undone.')">
+          <button type="submit" class="btn-delete" title="Delete entry">🗑</button>
+        </form>
+      </div>
+      <p class="entry-content">{{ entry.content }}</p>
+      {% if entry.ai_reflection %}
+      <div class="ai-header" style="margin-top:.75rem;">
+        <span class="ai-badge">🧠 Afya AI</span>
+        <span class="ai-label">Reflection</span>
+      </div>
+      <p class="ai-text" style="margin-top:.4rem;">{{ entry.ai_reflection }}</p>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="pagination">
+    {% if entries.has_prev %}
+      <a href="{{ url_for('history', page=entries.prev_num) }}" class="btn btn-secondary">← Newer</a>
+    {% endif %}
+    <span class="page-info">Page {{ entries.page }} of {{ entries.pages }}</span>
+    {% if entries.has_next %}
+      <a href="{{ url_for('history', page=entries.next_num) }}" class="btn btn-secondary">Older →</a>
+    {% endif %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    <div class="empty-icon">📓</div>
+    <h3>No entries yet</h3>
+    <p>Your journal history will appear here once you start writing.</p>
+    <a href="{{ url_for('journal') }}" class="btn btn-primary">Write your first entry</a>
+  </div>
+{% endif %}
+{% endblock %}

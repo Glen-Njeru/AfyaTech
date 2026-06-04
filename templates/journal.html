@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}New Entry — MindJournal{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Today's entry</h1>
+  <span class="date-badge">{{ today }}</span>
+</div>
+
+<div class="journal-form-card">
+  <form method="POST" class="journal-form">
+    <div class="form-group">
+      <label>How are you feeling right now? <span class="mood-display" id="moodDisplay">5/10</span></label>
+      <div class="mood-row">
+        <span class="mood-emoji" id="moodEmoji">😐</span>
+        <input type="range" id="moodSlider" name="mood" min="1" max="10" value="5" class="mood-slider">
+      </div>
+      <div class="mood-labels">
+        <span>1 — Very low</span>
+        <span>5 — Okay</span>
+        <span>10 — Amazing</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="content">What's on your mind?</label>
+      <div class="prompts">
+        <span class="prompt-chip" onclick="insertPrompt('Today I feel... ')">Today I feel…</span>
+        <span class="prompt-chip" onclick="insertPrompt('Something that happened today: ')">Something that happened</span>
+        <span class="prompt-chip" onclick="insertPrompt('I am grateful for... ')">I am grateful for</span>
+        <span class="prompt-chip" onclick="insertPrompt('One thing I want to let go of: ')">Let go of</span>
+      </div>
+      <textarea id="content" name="content" rows="8" placeholder="Write freely — this is your private space. No one else can read this." required></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-full">Save entry</button>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const slider = document.getElementById('moodSlider');
+const display = document.getElementById('moodDisplay');
+const emoji = document.getElementById('moodEmoji');
+const emojis = ['','😢','😟','😔','😕','😐','🙂','😊','😄','😁','🤩'];
+slider.addEventListener('input', () => {
+  const v = slider.value;
+  display.textContent = v + '/10';
+  emoji.textContent = emojis[v];
+});
+function insertPrompt(text) {
+  const ta = document.getElementById('content');
+  ta.value += (ta.value ? '\n' : '') + text;
+  ta.focus();
+}
+</script>
+{% endblock %}

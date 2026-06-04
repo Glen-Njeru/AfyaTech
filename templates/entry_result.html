@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Your Reflection — AfyaTech{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Entry saved ✅</h1>
+  <span class="date-badge">{{ entry.created_at.strftime('%B %d, %Y') }}</span>
+</div>
+
+<div class="result-grid">
+  <div class="entry-card entry-card-full">
+    <div class="entry-meta">
+      <span class="mood-badge mood-{{ entry.mood }}">{{ entry.mood }}/10</span>
+      <span class="entry-date">{{ entry.created_at.strftime('%I:%M %p') }}</span>
+    </div>
+    <p class="entry-content">{{ entry.content }}</p>
+  </div>
+
+  {% if entry.ai_reflection %}
+  <div class="ai-reflection-card">
+    <div class="ai-header">
+      <span class="ai-badge">🧠 Afya AI</span>
+      <span class="ai-label">Your personalized reflection</span>
+    </div>
+    <p class="ai-text">{{ entry.ai_reflection }}</p>
+  </div>
+  {% else %}
+  <div class="ai-reflection-card ai-unavailable">
+    <div class="ai-header">
+      <span class="ai-badge">🧠 Afya AI</span>
+    </div>
+    <p class="ai-text">Keep journaling — Afya AI will reflect with you as you build your streak.</p>
+  </div>
+  {% endif %}
+</div>
+
+<div class="result-actions">
+  <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
+  <a href="{{ url_for('journal') }}" class="btn btn-secondary">Write another entry</a>
+  <a href="{{ url_for('breathe') }}" class="btn btn-secondary">Try breathing exercise</a>
+</div>
+{% endblock %}

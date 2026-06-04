@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}AfyaTech — AI Mental Health Journal for Kenya{% endblock %}
+{% block content %}
+<div class="landing">
+  <div class="landing-hero">
+    <div class="hero-icon">🧠</div>
+    <h1>AfyaTech — your AI-powered mental health journal, built for Kenya.</h1>
+    <p class="hero-sub">Write freely, track your mood, and let Afya AI reflect with you — in language that understands your world.</p>
+    <div class="hero-actions">
+      <a href="{{ url_for('signup') }}" class="btn btn-primary">Get started free</a>
+      <a href="{{ url_for('login') }}" class="btn btn-secondary">Log in</a>
+    </div>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feat-icon">📝</div>
+      <h3>Daily journaling</h3>
+      <p>Write freely with guided prompts to help you express what's on your mind.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feat-icon">😊</div>
+      <h3>Mood tracking</h3>
+      <p>Rate your mood from 1–10 every day and see your emotional patterns over time.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feat-icon">🧠</div>
+      <h3>Afya AI Reflections</h3>
+      <p>After every entry, Afya AI writes you a personal, culturally aware reflection — like a wise friend who truly listens.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feat-icon">📊</div>
+      <h3>Weekly insights</h3>
+      <p>Afya AI analyzes your mood patterns and gives you a personalized weekly insight every time you visit your dashboard.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feat-icon">🌬️</div>
+      <h3>Breathing exercises</h3>
+      <p>Guided breathing tools to calm anxiety and reset in stressful moments.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feat-icon">🔒</div>
+      <h3>Fully private</h3>
+      <p>Your entries belong to you. No ads, no data selling, no third-party access.</p>
+    </div>
+  </div>
+
+  <div class="landing-cta">
+    <h2>Start your journey today.</h2>
+    <a href="{{ url_for('signup') }}" class="btn btn-primary btn-large">Create your journal</a>
+  </div>
+</div>
+{% endblock %}

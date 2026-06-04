@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — AfyaTech{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Good {{ 'morning' if now_hour < 12 else ('afternoon' if now_hour < 17 else 'evening') }}, {{ current_user.name.split()[0] }} 👋</h1>
+  <a href="{{ url_for('journal') }}" class="btn btn-primary">+ Write today's entry</a>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-label">Total entries</div>
+    <div class="stat-value">{{ total }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Average mood</div>
+    <div class="stat-value">{{ avg_mood if avg_mood else '—' }}{% if avg_mood %}<span class="stat-unit">/10</span>{% endif %}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Day streak</div>
+    <div class="stat-value">{{ streak }}<span class="stat-unit"> 🔥</span></div>
+  </div>
+</div>
+
+{% if chart_labels %}
+<div class="chart-card">
+  <h2>Mood over time</h2>
+  <div class="chart-wrap">
+    <canvas id="moodChart"></canvas>
+  </div>
+</div>
+{% endif %}
+
+{% if weekly_insight %}
+<div class="weekly-insight-card">
+  <div class="ai-header">
+    <span class="ai-badge">🧠 Afya AI</span>
+    <span class="ai-label">Your weekly insight</span>
+  </div>
+  <p class="ai-text">{{ weekly_insight }}</p>
+</div>
+{% endif %}
+
+<div class="section-header">
+  <h2>Recent entries</h2>
+  <a href="{{ url_for('history') }}" class="link-muted">View all →</a>
+</div>
+
+{% if entries %}
+  <div class="entries-list">
+    {% for entry in entries[:5] %}
+    <div class="entry-card">
+      <div class="entry-meta">
+        <span class="mood-badge mood-{{ entry.mood }}">{{ entry.mood }}/10</span>
+        <span class="entry-date">{{ entry.created_at.strftime('%B %d, %Y · %I:%M %p') }}</span>
+      </div>
+      <p class="entry-preview">{{ entry.content[:180] }}{% if entry.content|length > 180 %}…{% endif %}</p>
+    </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    <div class="empty-icon">📓</div>
+    <h3>No entries yet</h3>
+    <p>Write your first journal entry to get started.</p>
+    <a href="{{ url_for('journal') }}" class="btn btn-primary">Write now</a>
+  </div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if chart_labels %}
+<script>
+const labels = {{ chart_labels | tojson }};
+const moods  = {{ chart_moods  | tojson }};
+const ctx = document.getElementById('moodChart').getContext('2d');
+new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: labels,
+    datasets: [{
+      label: 'Mood',
+      data: moods,
+      borderColor: '#7c6fcd',
+      backgroundColor: 'rgba(124,111,205,0.08)',
+      borderWidth: 2,
+      pointBackgroundColor: '#7c6fcd',
+      pointRadius: 5,
+      tension: 0.3,
+      fill: true
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: { min: 1, max: 10, ticks: { stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.05)' } },
+      x: { grid: { display: false } }
+    },
+    plugins: { legend: { display: false } }
+  }
+});
+</script>
+{% endif %}
+{% endblock %}

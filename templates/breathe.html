@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Breathing Exercise — MindJournal{% endblock %}
+{% block content %}
+<div class="breathe-page">
+  <h1>Breathing exercise</h1>
+  <p class="breathe-sub">Take a moment to calm your mind. Choose a technique and follow the guide.</p>
+
+  <div class="technique-tabs">
+    <button class="tech-btn active" onclick="setTechnique('478')">4-7-8 Calm</button>
+    <button class="tech-btn" onclick="setTechnique('box')">Box Breathing</button>
+    <button class="tech-btn" onclick="setTechnique('simple')">Simple Breath</button>
+  </div>
+
+  <div class="breath-circle-wrap">
+    <div class="breath-ring" id="breathRing">
+      <div class="breath-circle" id="breathCircle">
+        <span class="breath-instruction" id="breathText">Press Start</span>
+        <span class="breath-count" id="breathCount"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="breath-controls">
+    <button class="btn btn-primary" id="startBtn" onclick="toggleBreath()">Start</button>
+    <span class="cycle-count">Cycles completed: <strong id="cycleCount">0</strong></span>
+  </div>
+
+  <div class="technique-info" id="techInfo">
+    <strong>4-7-8 Technique:</strong> Inhale for 4 seconds, hold for 7, exhale for 8. Reduces anxiety fast.
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const techniques = {
+  '478':   { steps: [['Inhale',4],['Hold',7],['Exhale',8]], info: '<strong>4-7-8 Technique:</strong> Inhale for 4s, hold for 7s, exhale for 8s. Reduces anxiety fast.' },
+  'box':   { steps: [['Inhale',4],['Hold',4],['Exhale',4],['Hold',4]], info: '<strong>Box Breathing:</strong> Equal 4-second phases — used by athletes and military to reset focus.' },
+  'simple':{ steps: [['Inhale',4],['Exhale',6]], info: '<strong>Simple Breath:</strong> Slow inhale, longer exhale. Activates the parasympathetic nervous system.' }
+};
+
+let current = '478';
+let running = false;
+let stepIndex = 0;
+let timeLeft = 0;
+let cycles = 0;
+let timer = null;
+
+function setTechnique(t) {
+  if (running) stopBreath();
+  current = t;
+  stepIndex = 0;
+  document.querySelectorAll('.tech-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('techInfo').innerHTML = techniques[t].info;
+  document.getElementById('breathText').textContent = 'Press Start';
+  document.getElementById('breathCount').textContent = '';
+  document.getElementById('breathCircle').className = 'breath-circle';
+}
+
+function toggleBreath() {
+  running ? stopBreath() : startBreath();
+}
+
+function startBreath() {
+  running = true;
+  document.getElementById('startBtn').textContent = 'Stop';
+  nextStep();
+}
+
+function stopBreath() {
+  running = false;
+  clearInterval(timer);
+  document.getElementById('startBtn').textContent = 'Start';
+  document.getElementById('breathText').textContent = 'Press Start';
+  document.getElementById('breathCount').textContent = '';
+  document.getElementById('breathCircle').className = 'breath-circle';
+}
+
+function nextStep() {
+  if (!running) return;
+  const steps = techniques[current].steps;
+  const [label, duration] = steps[stepIndex];
+  timeLeft = duration;
+  document.getElementById('breathText').textContent = label;
+  document.getElementById('breathCount').textContent = timeLeft;
+  const circle = document.getElementById('breathCircle');
+  circle.className = 'breath-circle phase-' + label.toLowerCase().replace(' ','');
+  clearInterval(timer);
+  timer = setInterval(() => {
+    timeLeft--;
+    document.getElementById('breathCount').textContent = timeLeft;
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      stepIndex++;
+      if (stepIndex >= steps.length) {
+        stepIndex = 0;
+        cycles++;
+        document.getElementById('cycleCount').textContent = cycles;
+      }
+      setTimeout(nextStep, 300);
+    }
+  }, 1000);
+}
+</script>
+{% endblock %}

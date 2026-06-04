@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Chat with Afya — AfyaTech{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Chat with Afya 🧠</h1>
+  <span class="date-badge">Your AI wellness companion</span>
+</div>
+
+<div class="chat-container">
+  <div class="chat-messages" id="chatMessages">
+    <div class="chat-msg afya">
+      <div class="msg-avatar">🧠</div>
+      <div class="msg-bubble">
+        Jambo! I'm Afya, your personal wellness companion. I'm here to listen, reflect, and support you — whatever is on your mind today. How are you feeling right now?
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-suggestions" id="suggestions">
+    <button class="suggestion-btn" onclick="sendSuggestion(this)">I'm feeling anxious 😟</button>
+    <button class="suggestion-btn" onclick="sendSuggestion(this)">I need motivation 💪</button>
+    <button class="suggestion-btn" onclick="sendSuggestion(this)">I'm overwhelmed with work 😔</button>
+    <button class="suggestion-btn" onclick="sendSuggestion(this)">I just need someone to talk to 🤝</button>
+  </div>
+
+  <div class="chat-input-row">
+    <textarea id="chatInput" placeholder="Type your message to Afya..." rows="2" onkeydown="handleKey(event)"></textarea>
+    <button class="btn btn-primary chat-send-btn" onclick="sendMessage()" id="sendBtn">Send</button>
+  </div>
+  <p class="chat-disclaimer">Afya is an AI wellness companion, not a licensed therapist. If you are in crisis, please call a helpline immediately.</p>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let history = [];
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function sendSuggestion(btn) {
+  document.getElementById('chatInput').value = btn.textContent.trim();
+  document.getElementById('suggestions').style.display = 'none';
+  sendMessage();
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  document.getElementById('sendBtn').disabled = true;
+  document.getElementById('suggestions').style.display = 'none';
+  appendMsg('user', text);
+  history.push({ role: 'user', content: text });
+  const typing = appendTyping();
+  try {
+    const res = await fetch('/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text, history: history })
+    });
+    const data = await res.json();
+    typing.remove();
+    const reply = data.reply || "I'm here with you. Can you tell me more?";
+    appendMsg('afya', reply);
+    history.push({ role: 'assistant', content: reply });
+  } catch {
+    typing.remove();
+    appendMsg('afya', "I'm having trouble connecting right now. Please try again in a moment.");
+  }
+  document.getElementById('sendBtn').disabled = false;
+  input.focus();
+}
+
+function appendMsg(role, text) {
+  const box = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + role;
+  div.innerHTML = role === 'afya'
+    ? `<div class="msg-avatar">🧠</div><div class="msg-bubble">${text}</div>`
+    : `<div class="msg-bubble">${text}</div>`;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+  return div;
+}
+
+function appendTyping() {
+  const box = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg afya';
+  div.innerHTML = '<div class="msg-avatar">🧠</div><div class="msg-bubble typing-bubble"><span></span><span></span><span></span></div>';
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+  return div;
+}
+</script>
+{% endblock %}
