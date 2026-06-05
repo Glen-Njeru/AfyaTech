@@ -11,7 +11,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'mindjournal-secret-key-2024'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mindjournal.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/mindjournal.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
