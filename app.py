@@ -85,6 +85,10 @@ Be warm, brief, and grounded. No clinical language."""
     return ask_groq(prompt)
 
 db = SQLAlchemy(app)
+
+with app.app_context():
+    db.create_all()
+
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message = 'Please log in to access your journal.'
@@ -105,6 +109,9 @@ class Entry(db.Model):
     ai_reflection = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     entry_date = db.Column(db.Date, default=date.today)
+
+with app.app_context():
+    db.create_all()
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -292,6 +299,4 @@ Your personality:
     return jsonify({"reply": reply})
 
 if __name__ == '__main__':
-    if __name__ == '__main__':
-        db.create_all()
     app.run(debug=True)
