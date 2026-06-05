@@ -291,7 +291,7 @@ Your personality:
         reply = "I'm here with you. Sometimes words are hard to find — take your time. What's on your heart right now?"
     return jsonify({"reply": reply})
 
-with app.app_context():
-    with app.app_context():
+if __name__ == '__main__':
+    if __name__ == '__main__':
         db.create_all()
     app.run(debug=True)
